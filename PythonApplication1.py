@@ -19,7 +19,7 @@ def Choice():
     ch = input("1/2: ")
     return int(ch)
 
-def Table(seq1, seq2, table):
+def Table(seq1, seq2, table, file):
     if len(seq1) <= len(seq2):
         len1 = len(seq1)
         len2 = len(seq2)
@@ -54,6 +54,9 @@ def Table(seq1, seq2, table):
         row += " ".join(f"{table[i][j]:>2}" for j in range(1, len1 + 1))  
         print(row)
 
+    for row in table:
+        file.write(" ".join(map(str, row)) + "\n")
+
 def Match(table, i, j, match, gap):
     if i + 1 < len(table) and j + 1 < len(table[0]):
         table[i+1][j+1] = max(
@@ -74,7 +77,7 @@ def Mis(table, i, j, mismatch, gap):
         )
     return table
 
-def Score(seq1, seq2, pos, table, match, mismatch, gap):
+def Score(seq1, seq2, pos, table, match, mismatch, gap, file):
     scr1 = []
     scr2 = []
     i, j = pos
@@ -125,8 +128,13 @@ def Score(seq1, seq2, pos, table, match, mismatch, gap):
     print("\033[95m", path, "\033[0m")
     print("\033[92m", scr2, "\033[0m")
 
+    file.write("\n")  
+    file.write(f"{scr1}\n") 
+    file.write(f"{path}\n")  
+    file.write(f"{scr2}\n")
 
-def Algorithm(seq1, seq2):
+
+def Algorithm(seq1, seq2, output_file="output.txt"):
     match = int(input("Podaj wartosc match: "))
     mismatch = int(input("Podaj wartosc mismatch: "))
     gap = int(input("Podaj wartosc gap: "))
@@ -154,11 +162,11 @@ def Algorithm(seq1, seq2):
                 maks = table[i+1][j+1]
                 pos = (i+1, j+1)
 
-    print()
-    Table(seq1, seq2, table)
-    print()
-    Score(seq1, seq2, pos, table, match, mismatch, gap)
-    print()
+
+    with open(output_file, "w") as f:
+        Table(seq1, seq2, table, f)
+        f.write(" ")
+        Score(seq1, seq2, pos, table, match, mismatch, gap, f)
 
 if __name__ == "__main__":
     seq1, seq2 = "", ""
@@ -178,4 +186,4 @@ if __name__ == "__main__":
         print("1. ", seq1)
         print("2. ", seq2)
 
-    Algorithm(seq1, seq2)
+    Algorithm(seq1, seq2, output_file="wyniki.txt")
